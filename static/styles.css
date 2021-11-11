@@ -1,0 +1,24 @@
+.navbar {
+  padding: 1rem;
+}
+#hero {
+  background-image: url("images/jr-korpa-9XngoIpxcEo-unsplash.jpg");
+  width: 100%;
+  height: fit-content;
+  padding: 50px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  opacity: 0.85;
+}
+.video{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 3rem;
+}

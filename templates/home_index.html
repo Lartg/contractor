@@ -1,0 +1,48 @@
+
+{% extends "base.html" %}
+{% block content %}
+    <!-- HERO -->
+
+    <div class="jumbotron text-center" id="hero">
+      <h1>Work, Vibe, Live</h1>
+      <p class="lead">be happy</p>
+      <a href="#" class="btn btn-primary">Learn More</a>
+    </div>
+
+    <!-- BENEFITS -->
+
+    <div class="container mb-5 mt-5">
+      <div class="row m-5">
+          <div class="video">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/hMfGdzhOEX0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        <!--This didn't work how I thought it would-->
+        <div class="col-lg-4">
+          <h3>Safe</h3>
+          <p class="lead"></p>
+        </div>
+        <div class="col-lg-4">
+          <h3>Healthy</h3>
+          <p class="lead"></p>
+        </div>
+        <div class="col-lg-4">
+          <h3>Fun</h3>
+          <p class="lead"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALL TO ACTION -->
+
+    <div class="jumbotron text-center mb-0">
+      <p class="lead mb-4">Sign Up for More Infomation</p>
+      <div class="d-flex justify-content-center">
+        <form action="#" class='form-inline'>
+          <input type="text" class="form-control mb-2 mr-sm-2" placeholder="Email"/>
+          <button type="submit" class="btn btn-primary mb-2">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    
+{% endblock %}
