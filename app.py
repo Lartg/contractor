@@ -6,18 +6,19 @@ from bson.objectid import ObjectId
 app = Flask(__name__)
 
 #remove when implemented db
+#give moneys
 donor_user = {
 'username': 'donor',
 'password': 'password',
 'donations': []
 }
-
+#add new charity
 charity_user = {
 'username': 'charity',
 'password': 'password',
 'donations': []
 }
-
+#view donor account
 advisor_user = {
 'username': 'advisor',
 'password': 'password',
