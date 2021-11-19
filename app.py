@@ -1,22 +1,29 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+# from werkzeug.utils import redirect
+# from werkzeug.wrappers import request
 
+client = MongoClient('mongodb+srv://Admin:kHwGiTilGkc8OEq4@cluster0.anqw0.mongodb.net/Cluster0?retryWrites=true&w=majority')
+db = client.get_default_database()
+accounts = db.accounts
 
 app = Flask(__name__)
 
-#remove when implemented db
-#give moneys
+#stock accounts for demo
+eg_dono = {'amount': 1000000, 'charity': 'The best charity', 'date': 'everyday'}
+
 donor_user = {
 'username': 'donor',
 'password': 'password',
-'donations': []
+'donations': eg_dono,
 }
 #add new charity
 charity_user = {
 'username': 'charity',
 'password': 'password',
-'donations': []
+'donations': [],
+'donors': []
 }
 #view donor account
 advisor_user = {
@@ -24,8 +31,11 @@ advisor_user = {
 'password': 'password',
 'clients': []
 }
+accounts.insert_one(donor_user)
+accounts.insert_one(charity_user)
+accounts.insert_one(advisor_user)
+#, charity_user, advisor_user
 
-users = [donor_user, charity_user, advisor_user]
 
 @app.route('/')
 def home_page():
@@ -34,7 +44,7 @@ def home_page():
 
 # NAVBAR ROUTES ---------------------------------------------------------
 @app.route('/login/')
-def login():
+def login_page():
     return render_template('login.html')
 
 @app.route('/CW/')
@@ -56,6 +66,39 @@ def new_account():
     #log user in
     #we are ingnoring this for now, creating 3 super accounts to demo project
     return render_template('login.html')
+
+#------------------------------------------------------------------------
+
+@app.route('/login', methods=['POST'])
+def login_submit():
+  account_username = request.form.get('username')
+  account = accounts.find_one({'username': account_username})
+  print(account)
+  return render_template('account_profile.html', account = account)
+  
+
+ 
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
