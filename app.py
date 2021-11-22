@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 # from werkzeug.utils import redirect
@@ -11,18 +11,24 @@ accounts = db.accounts
 app = Flask(__name__)
 
 #stock accounts for demo
-eg_dono = {'amount': 1000000, 'charity': 'The best charity', 'date': 'everyday'}
+eg_dono = {'amount': '1,000,000.00', 'charity': 'The best charity', 'date': 'everyday', 'mission' : 'Helping people in need.'}
 
+
+no_user = {
+  'username': 'Login',  
+}
 donor_user = {
 'username': 'donor',
 'password': 'password',
-'donations': eg_dono,
+'first_name': 'John',
+'last_name': 'Doe',
+'donations': [eg_dono]
 }
 #add new charity
 charity_user = {
 'username': 'charity',
 'password': 'password',
-'donations': [],
+'donations': eg_dono,
 'donors': []
 }
 #view donor account
@@ -73,12 +79,19 @@ def new_account():
 def login_submit():
   account_username = request.form.get('username')
   account = accounts.find_one({'username': account_username})
+  if account == None:
+      abort(404)
   print(account)
-  return render_template('account_profile.html', account = account)
+  return render_template('account_profile.html', account = donor_user)
   
-
+@app.route('/donate-now/')
+def donate():
+    return render_template('donate_now.html')
  
-   
+@app.route('/donation-form/')
+def donation_form():
+    return render_template('donation_form.html')
+ 
 
 
 
