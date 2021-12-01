@@ -63,13 +63,6 @@ def featured_charities():
 def learn_more():
     return render_template('learn_more.html')
 
-@app.route('/create-account/')
-def new_account():
-    #submit new account object
-    #log user in
-    #we are ingnoring this for now, creating 3 super accounts to demo project
-    return render_template('login.html')
-
 #------------------------------------------------------------------------
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -175,11 +168,23 @@ def update_donation(account_username, charity_name):
 
 #----------------------------------------------------------------------------------------------------------------------------
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET','POST'])
 def create_account():
-    
-    pass
+    account = {
+        'username': request.form.get('Username'),
+        'password': request.form.get('Password'),
+        'first_name': request.form.get('First Name'),
+        'last_name': request.form.get('Last Name'),
+        'donations': []
+    }
+    accounts.insert_one(account)
+    return redirect(('/account_profile/' + account['username']))
 
+@app.route('/account_profile/<string:account_username>/delete', methods=['POST'])
+def delete_account(account_username):
+    account = accounts.find_one({'username': account_username})
+    accounts.delete_one(account)
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run(debug=True)
