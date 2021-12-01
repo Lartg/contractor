@@ -7,14 +7,17 @@
 {% for donation in account.donations %}
 <div class="card mb-3" style="max-width: 540px;">
   <div class="row g-0">
-    <div class="col-md-4">
-      <img src="..." class="img-fluid rounded-start" alt="...">
-    </div>
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title">Donation to: {{ donation.charity }}</h5>
         <p class="card-text">${{ donation.amount }}</p>
-        <p class="card-text"><small class="text-muted">Date of Donation: {{ donation.date }} to {{ donation.message }}</small></p>
+        <p class="card-text"><small class="text-muted">Date of Donation: {{ donation.date }} to {{ donation.memo }}</small></p>
+        <form method='POST' action='/account_profile/{{ account.username }}/{{ donation.charity }}/delete'>
+          <button type="submit" class="btn btn-primary mb-2">Refund Donation</button>
+        </form>
+        <form method='POST' action='/account_profile/{{ account.username }}/{{ donation.charity }}/update'>
+          <button class="btn btn-primary mb-2">Edit Donation</button>
+        </form>
       </div>
     </div>
   </div>
@@ -22,5 +25,5 @@
 {% endfor %}
 <h1>{{ account.donors }}</h1>
 <h1>{{ account.clients }}</h1>
-<a href="/donate-now/"><button class="btn btn-primary mb-2">Donate to a Featured Charity</button></a>
+<a href="/{{ account.username }}/donate-now/"><button class="btn btn-primary mb-2">Donate to a Featured Charity</button></a>
 {% endblock %}

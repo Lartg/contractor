@@ -1,3 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
+
+<h2>Thank you {{ account.username }} for choosing to donate to {{ charity.name }}!</h2>
+
+<form method="POST">
+  <p>$</p><input type="number" class="form-control mb-2 mr-sm-2" placeholder="0.00" id="ammount" name="amount"/>
+  <input type="text" class="form-control mb-2 mr-sm-2" placeholder="memo" value="" id="memo"/>
+  <button type="submit" class="btn btn-primary mb-2">Donate</button>
+</form>
+
 {% endblock %}

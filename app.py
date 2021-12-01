@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request, abort, url_for, redirect
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-# from werkzeug.utils import redirect
-# from werkzeug.wrappers import request
+from werkzeug.utils import redirect
+
 
 client = MongoClient('mongodb+srv://Admin:kHwGiTilGkc8OEq4@cluster0.anqw0.mongodb.net/Cluster0?retryWrites=true&w=majority')
 db = client.get_default_database()
@@ -10,9 +10,7 @@ accounts = db.accounts
 
 app = Flask(__name__)
 
-#stock accounts for demo
-eg_dono = {'amount': '1,000,000.00', 'charity': 'The best charity', 'date': 'everyday', 'mission' : 'Helping people in need.'}
-
+#eg_dono = {'amount': '1,000,000.00', 'charity': 'The best charity', 'date': 'everyday', 'memo' : 'Helping people in need.'}
 
 no_user = {
   'username': 'Login',  
@@ -22,13 +20,13 @@ donor_user = {
 'password': 'password',
 'first_name': 'John',
 'last_name': 'Doe',
-'donations': [eg_dono]
+'donations': []
 }
 #add new charity
 charity_user = {
 'username': 'charity',
 'password': 'password',
-'donations': eg_dono,
+'donations': [],
 'donors': []
 }
 #view donor account
@@ -40,7 +38,6 @@ advisor_user = {
 accounts.insert_one(donor_user)
 accounts.insert_one(charity_user)
 accounts.insert_one(advisor_user)
-#, charity_user, advisor_user
 
 
 @app.route('/')
@@ -75,44 +72,113 @@ def new_account():
 
 #------------------------------------------------------------------------
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login_submit():
   account_username = request.form.get('username')
   account = accounts.find_one({'username': account_username})
   if account == None:
       abort(404)
-  print(account)
-  return render_template('account_profile.html', account = donor_user)
+  return redirect('/account_profile/'+ account_username)
   
-@app.route('/donate-now/')
-def donate():
-    return render_template('donate_now.html')
+@app.route('/account_profile/<string:account_username>', methods=['GET'])
+def account_profile(account_username):
+    account = accounts.find_one({'username': account_username})
+    return render_template('account_profile.html', account = account)
+
+
+#------------------------------------------------------------------------
+
  
-@app.route('/donation-form/')
-def donation_form():
-    return render_template('donation_form.html')
- 
+@app.route('/<string:account_username>/donate-now/')
+def choose_charity(account_username):
+    account = accounts.find_one({'username': account_username})
+    return render_template('featured_charities.html', account = account)
+
+@app.route('/<string:account_username>/donate-now/<string:charity>-donation-form')
+def donation_form(account_username, charity):
+    account = accounts.find_one({'username': account_username})
+
+    if charity == 'st-jude':
+        charity = {
+            'name': "St. Jude Children's Research Hospital"
+        }
+    elif charity == 'ACF':
+        charity = {
+            'name': "Alaska Conservation Foundation"
+        }
+    elif charity == 'unicef':
+        charity = {
+            'name': "United States Fund for UNICEF"
+        }
+    
+    return render_template('donation_form.html', account = account, charity = charity)
 
 
+@app.route('/<string:account_username>/donate-now/<string:charity>-donation-form', methods=['GET', 'POST'])
+def donation_form_submit(account_username, charity):
+    account = accounts.find_one({'username': account_username})
 
+    if charity == 'st-jude':
+        charity = {
+            'abbrev': 'st-jude',
+            'name': "St. Jude Children's Research Hospital",
+            'mission': "Save children"
+        }
+    elif charity == 'ACF':
+        charity = {
+            'abbrev': 'ACF',
+            'name': "Alaska Conservation Foundation",
+            'mission': 'preserve Alaskan Wildlife'
+        }
+    elif charity == 'unicef':
+        charity = {
+            'abbrev': 'unicef',
+            'name': "United States Fund for UNICEF",
+            'mission': "Save children"
+        }
+    donation = {
+        'abbrev': charity['abbrev'],
+        'charity': charity['name'],
+        'amount': request.form.get('amount'),
+        'date': 'today',
+        'memo': charity['mission']
+    }
 
+    account['donations'].append(donation)
+    accounts.save(account)
 
+    return redirect(('/account_profile/' + account_username))
 
+@app.route('/account_profile/<string:account_username>/<string:charity_name>/delete', methods=['GET','POST'])
+def delete_donation(account_username, charity_name):
+    account = accounts.find_one({'username': account_username})
 
+    for donation in account['donations']:
+        if donation['charity'] == charity_name:
+            account['donations'].remove(donation)
+            accounts.save(account)
 
+    return redirect(('/account_profile/' + account_username))
 
+@app.route('/account_profile/<string:account_username>/<string:charity_name>/update', methods=['GET','POST'])
+def update_donation(account_username, charity_name):
+    account = accounts.find_one({'username': account_username})
 
+    for donation in account['donations']:
+        if donation['charity'] == charity_name:
+            charity_name = donation['abbrev']
+            account['donations'].remove(donation)
+            accounts.save(account)
+            return redirect('/'+account_username+'/donate-now/'+charity_name+'-donation-form')
 
+    return redirect(('/account_profile/' + account_username))
 
+#----------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
+@app.route('/', methods=['POST'])
+def create_account():
+    
+    pass
 
 
 if __name__ == '__main__':
